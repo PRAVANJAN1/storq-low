@@ -29,8 +29,10 @@ Tests and examples are enabled by default.
 Run `build/storq_basic_runtime`, `build/storq_storage`,
 `build/storq_format_inspector <database-file>`,
 `build/storq_page_analyzer <database.sqlite>`, and
-`build/storq_analyze_malformed` on Linux, or the corresponding executables
-under `build\Release` on Windows with a multi-configuration generator.
+`build/storq_analyze_malformed`, `build/storq_wal_analyzer <database.sqlite-wal>`,
+and `build/storq_analyze_truncated_wal` on Linux, or the corresponding
+executables under `build\Release` on Windows with a multi-configuration
+generator.
 
 To select a shared library, configure with `-DSTORQ_BUILD_SHARED=ON`. Use
 `-DSTORQ_BUILD_TESTS=OFF` or `-DSTORQ_BUILD_EXAMPLES=OFF` to disable those
@@ -119,3 +121,19 @@ Build `storq_page_analyzer` and pass a SQLite path to print a page-one report
 and bounded database scan. `storq_analyze_malformed` creates and analyzes an
 isolated malformed SQLite fixture under the system temporary directory; it
 does not touch user databases.
+
+## WAL analysis API
+
+`WALAnalyzer` recognizes SQLite WAL files and reads them through read-only
+`StorageFile` access. It validates both documented magic values, format
+version, page size, the 32-byte header checksum, each frame's salts, and the
+rolling checksum chain. Frames are streamed one page at a time; the final
+report retains only bounded frame metadata, transaction summaries, issues, and
+timeline events. Nonzero frame database-size fields mark physical WAL commit
+boundaries. Checkpoint sequence and salts are reported as observed metadata;
+the analyzer does not claim an exact checkpoint state without WAL-index data.
+It does not perform recovery, checkpointing, or WAL modification.
+
+Build `storq_wal_analyzer` and pass a WAL path to inspect it. The
+`storq_analyze_truncated_wal` example creates a synthetic, incomplete WAL in
+the system temporary directory and analyzes that isolated fixture.

@@ -26,6 +26,7 @@ set(STORQ_CORE_SOURCES
     src/core/version.cpp
     src/format/format_inspector.cpp
     src/storage/storage.cpp
+    src/wal/wal_analyzer.cpp
 )
 
 if(STORQ_BUILD_SHARED)
@@ -83,6 +84,16 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_analyze_malformed examples/analyze_malformed.cpp)
     target_link_libraries(storq_analyze_malformed PRIVATE Storq::core)
     set_target_properties(storq_analyze_malformed PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_wal_analyzer examples/wal_analyzer.cpp)
+    target_link_libraries(storq_wal_analyzer PRIVATE Storq::core)
+    set_target_properties(storq_wal_analyzer PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_analyze_truncated_wal examples/analyze_truncated_wal.cpp)
+    target_link_libraries(storq_analyze_truncated_wal PRIVATE Storq::core)
+    set_target_properties(storq_analyze_truncated_wal PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()

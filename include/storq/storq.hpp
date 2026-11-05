@@ -15,3 +15,4 @@
 #include <storq/core/version.hpp>
 #include <storq/format/format_inspector.hpp>
 #include <storq/storage/storage.hpp>
+#include <storq/wal/wal_analyzer.hpp>
