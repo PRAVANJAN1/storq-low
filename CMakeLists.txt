@@ -23,6 +23,7 @@ set(STORQ_CORE_SOURCES
     src/core/module_registry.cpp
     src/core/runtime.cpp
     src/core/version.cpp
+    src/format/format_inspector.cpp
     src/storage/storage.cpp
 )
 
@@ -66,6 +67,11 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_storage examples/storage.cpp)
     target_link_libraries(storq_storage PRIVATE Storq::core)
     set_target_properties(storq_storage PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_format_inspector examples/format_inspector.cpp)
+    target_link_libraries(storq_format_inspector PRIVATE Storq::core)
+    set_target_properties(storq_format_inspector PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()

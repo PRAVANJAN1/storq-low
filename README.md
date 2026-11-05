@@ -4,8 +4,9 @@ Storq is a modular C++20 database reliability engineering foundation. The core
 provides lifecycle management, configuration validation, structured logging,
 typed errors and results, module registration, capabilities, version
 information, common utilities, and a backend-neutral storage abstraction.
-Database formats, storage engines, and fault injection are outside the current
-modules.
+The format inspection module currently validates SQLite database headers and
+page layout. Full database engines and the Storq physical format are not
+implemented.
 
 ## Build
 
@@ -25,9 +26,10 @@ ctest --test-dir build --output-on-failure
 
 Tests and examples are enabled by default.
 
-Run `build/storq_basic_runtime` and `build/storq_storage` on Linux, or
-`build\Release\storq_basic_runtime.exe` and `build\Release\storq_storage.exe`
-on Windows with a multi-configuration generator.
+Run `build/storq_basic_runtime`, `build/storq_storage`, and
+`build/storq_format_inspector <database-file>` on Linux, or the corresponding
+executables under `build\Release` on Windows with a multi-configuration
+generator.
 
 To select a shared library, configure with `-DSTORQ_BUILD_SHARED=ON`. Use
 `-DSTORQ_BUILD_TESTS=OFF` or `-DSTORQ_BUILD_EXAMPLES=OFF` to disable those
@@ -81,3 +83,21 @@ start; observers registered later do not receive that operation, while an
 observer removed during it still receives its completion callback. Callbacks
 run in registration order outside file and registry locks; observer exceptions
 are isolated from storage operations.
+
+## Format inspection API
+
+`FormatInspector` is an `IModule` that registers SQLite inspection support and
+advertises the `format_inspection` and `format_inspection.sqlite` capabilities.
+Register the module with a `Runtime` before runtime initialization, then call
+`inspect(path)` to open the database read-only and report its header, page
+counts, encoding, journal format, and validation status. Inspection does not
+modify the source database. The header's database page count is used only when
+it is nonzero and the change counter matches the version-valid-for value;
+otherwise the inspector reports the mismatch and uses complete physical pages.
+
+Custom formats can be added by implementing `IFormatParser` (or
+`StorqFormatParser` for a future Storq format) and registering the parser with
+the inspector. Registering `StorqFormatParser` provides only an extension
+point; Storq's physical database format is not yet defined or parsed. SQLite
+is used only to generate an additional test fixture when its development
+library is available; the Storq library itself has no SQLite dependency.

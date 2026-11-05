@@ -12,4 +12,5 @@
 #include <storq/core/module_registry.hpp>
 #include <storq/core/runtime.hpp>
 #include <storq/core/version.hpp>
+#include <storq/format/format_inspector.hpp>
 #include <storq/storage/storage.hpp>
