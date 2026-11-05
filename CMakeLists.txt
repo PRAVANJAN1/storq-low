@@ -23,6 +23,7 @@ set(STORQ_CORE_SOURCES
     src/core/module_registry.cpp
     src/core/runtime.cpp
     src/core/version.cpp
+    src/storage/storage.cpp
 )
 
 if(STORQ_BUILD_SHARED)
@@ -60,6 +61,11 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_basic_runtime examples/basic_runtime.cpp)
     target_link_libraries(storq_basic_runtime PRIVATE Storq::core)
     set_target_properties(storq_basic_runtime PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_storage examples/storage.cpp)
+    target_link_libraries(storq_storage PRIVATE Storq::core)
+    set_target_properties(storq_storage PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()
