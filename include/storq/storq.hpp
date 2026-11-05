@@ -4,6 +4,7 @@
 #include <storq/common/result.hpp>
 #include <storq/common/types.hpp>
 #include <storq/common/utilities.hpp>
+#include <storq/analysis/page_analyzer.hpp>
 #include <storq/core/capabilities.hpp>
 #include <storq/core/configuration.hpp>
 #include <storq/core/error.hpp>

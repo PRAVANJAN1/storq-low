@@ -26,10 +26,11 @@ ctest --test-dir build --output-on-failure
 
 Tests and examples are enabled by default.
 
-Run `build/storq_basic_runtime`, `build/storq_storage`, and
-`build/storq_format_inspector <database-file>` on Linux, or the corresponding
-executables under `build\Release` on Windows with a multi-configuration
-generator.
+Run `build/storq_basic_runtime`, `build/storq_storage`,
+`build/storq_format_inspector <database-file>`,
+`build/storq_page_analyzer <database.sqlite>`, and
+`build/storq_analyze_malformed` on Linux, or the corresponding executables
+under `build\Release` on Windows with a multi-configuration generator.
 
 To select a shared library, configure with `-DSTORQ_BUILD_SHARED=ON`. Use
 `-DSTORQ_BUILD_TESTS=OFF` or `-DSTORQ_BUILD_EXAMPLES=OFF` to disable those
@@ -101,3 +102,20 @@ the inspector. Registering `StorqFormatParser` provides only an extension
 point; Storq's physical database format is not yet defined or parsed. SQLite
 is used only to generate an additional test fixture when its development
 library is available; the Storq library itself has no SQLite dependency.
+
+## Page analysis API
+
+`PageAnalyzer` builds on `FormatInspector` and read-only `StorageFile` access to
+parse SQLite B-tree page headers, cell pointers, cell varints and payload
+boundaries, freeblock chains, overflow-page links, and page relationships.
+Database scans and B-tree traversal have configurable page, cell, chain-depth,
+graph, finding, and memory limits. Findings distinguish confirmed structural
+violations from unsupported pages and safety-limit/incomplete-analysis
+conditions; they are diagnostic only and never repair or write to the database.
+The scanner does not interpret WAL files, SQL schemas, record/index semantics,
+or infer unreachable pages without a known root.
+
+Build `storq_page_analyzer` and pass a SQLite path to print a page-one report
+and bounded database scan. `storq_analyze_malformed` creates and analyzes an
+isolated malformed SQLite fixture under the system temporary directory; it
+does not touch user databases.

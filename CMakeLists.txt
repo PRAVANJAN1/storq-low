@@ -16,6 +16,7 @@ endif()
 
 set(STORQ_CORE_SOURCES
     src/common/utilities.cpp
+    src/analysis/page_analyzer.cpp
     src/core/capabilities.cpp
     src/core/configuration.cpp
     src/core/error.cpp
@@ -72,6 +73,16 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_format_inspector examples/format_inspector.cpp)
     target_link_libraries(storq_format_inspector PRIVATE Storq::core)
     set_target_properties(storq_format_inspector PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_page_analyzer examples/page_analyzer.cpp)
+    target_link_libraries(storq_page_analyzer PRIVATE Storq::core)
+    set_target_properties(storq_page_analyzer PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_analyze_malformed examples/analyze_malformed.cpp)
+    target_link_libraries(storq_analyze_malformed PRIVATE Storq::core)
+    set_target_properties(storq_analyze_malformed PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()
