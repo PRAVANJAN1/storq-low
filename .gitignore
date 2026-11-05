@@ -1,0 +1,50 @@
+# CMake build output
+/build/
+/cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+install_manifest.txt
+compile_commands.json
+
+# Compiled artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.pch
+*.gch
+
+# Runtime and test output
+*.log
+*.gcda
+*.gcno
+
+# IDE and operating system files
+.vs/
+.idea/
+*.suo
+*.user
+.DS_Store
+Thumbs.db
+
+# Python SDK and tooling artifacts (for future modules)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+*.egg-info/

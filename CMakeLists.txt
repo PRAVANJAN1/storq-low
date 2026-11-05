@@ -1,0 +1,101 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(Storq VERSION 0.1.0 LANGUAGES CXX)
+
+option(STORQ_BUILD_SHARED "Build Storq as a shared library" OFF)
+option(STORQ_BUILD_EXAMPLES "Build Storq examples" ON)
+option(STORQ_BUILD_TESTS "Build Storq tests" ON)
+
+if(CMAKE_CONFIGURATION_TYPES)
+    set(STORQ_BUILD_TYPE_VALUE "$<CONFIG>")
+elseif(CMAKE_BUILD_TYPE)
+    set(STORQ_BUILD_TYPE_VALUE "${CMAKE_BUILD_TYPE}")
+else()
+    set(STORQ_BUILD_TYPE_VALUE "Unknown")
+endif()
+
+set(STORQ_CORE_SOURCES
+    src/common/utilities.cpp
+    src/core/capabilities.cpp
+    src/core/configuration.cpp
+    src/core/error.cpp
+    src/core/logger.cpp
+    src/core/module_registry.cpp
+    src/core/runtime.cpp
+    src/core/version.cpp
+)
+
+if(STORQ_BUILD_SHARED)
+    add_library(storq_core SHARED ${STORQ_CORE_SOURCES})
+else()
+    add_library(storq_core STATIC ${STORQ_CORE_SOURCES})
+endif()
+
+add_library(Storq::core ALIAS storq_core)
+set_target_properties(storq_core PROPERTIES EXPORT_NAME core)
+
+target_compile_features(storq_core PUBLIC cxx_std_20)
+target_include_directories(storq_core
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
+target_compile_definitions(storq_core
+    PRIVATE
+        STORQ_BUILD_TYPE="${STORQ_BUILD_TYPE_VALUE}"
+)
+find_package(Threads REQUIRED)
+target_link_libraries(storq_core PUBLIC Threads::Threads)
+
+if(MSVC)
+    target_compile_options(storq_core PRIVATE /W4 /permissive-)
+else()
+    target_compile_options(storq_core PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+if(STORQ_BUILD_SHARED AND WIN32)
+    set_target_properties(storq_core PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
+if(STORQ_BUILD_EXAMPLES)
+    add_executable(storq_basic_runtime examples/basic_runtime.cpp)
+    target_link_libraries(storq_basic_runtime PRIVATE Storq::core)
+    set_target_properties(storq_basic_runtime PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+endif()
+
+if(STORQ_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+install(TARGETS storq_core
+    EXPORT StorqTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(EXPORT StorqTargets
+    FILE StorqTargets.cmake
+    NAMESPACE Storq::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Storq
+)
+configure_package_config_file(
+    cmake/StorqConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/StorqConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Storq
+)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/StorqConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/StorqConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/StorqConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Storq
+)
