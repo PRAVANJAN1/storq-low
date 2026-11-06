@@ -92,3 +92,10 @@ set_target_properties(storq_adapter_tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 add_test(NAME storq_adapter_tests COMMAND storq_adapter_tests)
+
+add_executable(storq_workload_tests test_workload.cpp)
+target_link_libraries(storq_workload_tests PRIVATE Storq::core)
+set_target_properties(storq_workload_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+add_test(NAME storq_workload_tests COMMAND storq_workload_tests)

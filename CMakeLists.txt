@@ -33,6 +33,7 @@ set(STORQ_CORE_SOURCES
     src/wal/wal_analyzer.cpp
     src/adapters/database_adapter.cpp
     src/adapters/sqlite/sqlite_adapter.cpp
+    src/workload/workload_engine.cpp
 )
 
 if(STORQ_BUILD_SHARED)
