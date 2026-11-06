@@ -25,6 +25,7 @@ set(STORQ_CORE_SOURCES
     src/core/runtime.cpp
     src/core/version.cpp
     src/format/format_inspector.cpp
+    src/fault/fault_injector.cpp
     src/storage/storage.cpp
     src/wal/wal_analyzer.cpp
 )
@@ -94,6 +95,16 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_analyze_truncated_wal examples/analyze_truncated_wal.cpp)
     target_link_libraries(storq_analyze_truncated_wal PRIVATE Storq::core)
     set_target_properties(storq_analyze_truncated_wal PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_fault_injection examples/fault_injection.cpp)
+    target_link_libraries(storq_fault_injection PRIVATE Storq::core)
+    set_target_properties(storq_fault_injection PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_corrupt_wal examples/corrupt_wal.cpp)
+    target_link_libraries(storq_corrupt_wal PRIVATE Storq::core)
+    set_target_properties(storq_corrupt_wal PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()

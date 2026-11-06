@@ -57,3 +57,10 @@ if(SQLite3_FOUND)
     target_compile_definitions(storq_wal_tests PRIVATE STORQ_TEST_SQLITE3=1)
 endif()
 add_test(NAME storq_wal_tests COMMAND storq_wal_tests)
+
+add_executable(storq_fault_tests test_fault.cpp)
+target_link_libraries(storq_fault_tests PRIVATE Storq::core)
+set_target_properties(storq_fault_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+add_test(NAME storq_fault_tests COMMAND storq_fault_tests)

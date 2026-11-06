@@ -30,7 +30,8 @@ Run `build/storq_basic_runtime`, `build/storq_storage`,
 `build/storq_format_inspector <database-file>`,
 `build/storq_page_analyzer <database.sqlite>`, and
 `build/storq_analyze_malformed`, `build/storq_wal_analyzer <database.sqlite-wal>`,
-and `build/storq_analyze_truncated_wal` on Linux, or the corresponding
+`build/storq_analyze_truncated_wal`, `build/storq_fault_injection`, and
+`build/storq_corrupt_wal` on Linux, or the corresponding
 executables under `build\Release` on Windows with a multi-configuration
 generator.
 
@@ -137,3 +138,51 @@ It does not perform recovery, checkpointing, or WAL modification.
 Build `storq_wal_analyzer` and pass a WAL path to inspect it. The
 `storq_analyze_truncated_wal` example creates a synthetic, incomplete WAL in
 the system temporary directory and analyzes that isolated fixture.
+
+## Fault injection API
+
+`FaultInjector` is an opt-in runtime module that decorates existing
+`IStorageBackend` instances and exposes files through `StorageManager`. Rules
+are evaluated by a seeded scheduler in descending priority order; only the
+first selected rule runs for an operation. Equal priorities preserve
+registration order. Rules can constrain operation, resource, offset, SQLite
+page, operation sequence, exact matching occurrence, probability, and trigger
+limit. Rules repeat until cancelled or their configured trigger limit is
+reached; set `maximum_triggers=1` for one-shot faults.
+`FaultInjector::operation_trace()` returns the evaluated storage operation
+order for diagnosing nondeterministic concurrent workloads.
+
+Configure an existing, empty, dedicated directory with `isolated=true` and
+`disposable=true` before adding rules that modify data. Destructive rules also
+require `allow_destructive_operations=true`; writable native files must resolve
+inside that canonical root. Paths outside it, including paths that resolve
+outside through traversal or symlinks, are rejected. In-memory backends remain
+ephemeral. `create_test_copy()` copies a source through `StorageManager` into
+the authorized root, and `cleanup_file()` only removes an exact copy registered
+as created by that injector. Cleanup is explicit; source files are never
+automatically deleted.
+
+Write rejection, partial/truncated writes, delay, sync failure/interruption,
+file access/creation failure, file truncation, virtual disk capacity, invalid
+offsets, random and targeted byte corruption, SQLite B-tree page-header
+corruption, and SQLite WAL frame/header/checksum corruption are available as
+separate fault types. Corruption strategies only modify writes routed through
+the decorated backend and validate the selected SQLite structure before
+changing bytes. Seeds can be configured globally or per rule. Fault history
+stores state transitions and changed offsets, not file contents; statistics
+are safe to query concurrently. Delays can be interrupted with
+`cancel_pending_delays()`.
+
+The `storq_fault_injection` example uses a disposable single-page SQLite-format
+fixture and confirms the source is unchanged. `storq_corrupt_wal` builds a WAL
+fixture, copies it into the test root, corrupts a selected frame page, and
+reports the resulting checksum failure.
+
+These are controlled interface-level simulations, not physical device
+failures: synchronization errors do not establish that prior writes were
+lost; disk-full capacity is virtual; operations made outside the decorator
+are not injected or traced; and concurrent scheduling is reproducible only
+when the operation order is controlled. SQLite-specific page and WAL
+corruption do not generalize to other database formats. Crash simulation,
+recovery verification, repair, and production storage fault injection are not
+implemented.

@@ -14,5 +14,6 @@
 #include <storq/core/runtime.hpp>
 #include <storq/core/version.hpp>
 #include <storq/format/format_inspector.hpp>
+#include <storq/fault/fault_injector.hpp>
 #include <storq/storage/storage.hpp>
 #include <storq/wal/wal_analyzer.hpp>
