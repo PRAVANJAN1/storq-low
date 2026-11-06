@@ -15,6 +15,7 @@
 #include <storq/core/version.hpp>
 #include <storq/crash/crash_simulator.hpp>
 #include <storq/recovery/recovery_engine.hpp>
+#include <storq/forensics/forensics_engine.hpp>
 #include <storq/format/format_inspector.hpp>
 #include <storq/fault/fault_injector.hpp>
 #include <storq/storage/storage.hpp>

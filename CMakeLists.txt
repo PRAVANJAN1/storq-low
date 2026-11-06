@@ -26,6 +26,7 @@ set(STORQ_CORE_SOURCES
     src/core/version.cpp
     src/crash/crash_simulator.cpp
     src/recovery/recovery_engine.cpp
+    src/forensics/forensics_engine.cpp
     src/format/format_inspector.cpp
     src/fault/fault_injector.cpp
     src/storage/storage.cpp
@@ -117,6 +118,11 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_recovery_verification examples/recovery_verification.cpp)
     target_link_libraries(storq_recovery_verification PRIVATE Storq::core)
     set_target_properties(storq_recovery_verification PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_forensics examples/forensics.cpp)
+    target_link_libraries(storq_forensics PRIVATE Storq::core)
+    set_target_properties(storq_forensics PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()

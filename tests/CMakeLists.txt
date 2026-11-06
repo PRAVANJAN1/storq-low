@@ -78,3 +78,10 @@ set_target_properties(storq_recovery_tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 add_test(NAME storq_recovery_tests COMMAND storq_recovery_tests)
+
+add_executable(storq_forensics_tests test_forensics.cpp)
+target_link_libraries(storq_forensics_tests PRIVATE Storq::core)
+set_target_properties(storq_forensics_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+add_test(NAME storq_forensics_tests COMMAND storq_forensics_tests)
