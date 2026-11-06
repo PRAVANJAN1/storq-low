@@ -16,6 +16,14 @@ crash snapshots. Native filesystem persistence is modeled according to the
 backend synchronization contract and is not a claim about physical disk caches
 or hardware power-loss behavior. Destructive examples use disposable storage.
 
+## Recovery Verification
+
+Module 8 verifies recovered database states against an independent transaction
+history. It separates transaction, atomicity, durability, invariant, structural,
+and repeatability results and reports inconclusive evidence instead of
+manufacturing an outcome. Recovery inputs and output evidence are confined to
+isolated disposable workspaces.
+
 ## Build
 
 Configure and build with CMake 3.20 or newer:

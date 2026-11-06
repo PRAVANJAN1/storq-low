@@ -25,6 +25,7 @@ set(STORQ_CORE_SOURCES
     src/core/runtime.cpp
     src/core/version.cpp
     src/crash/crash_simulator.cpp
+    src/recovery/recovery_engine.cpp
     src/format/format_inspector.cpp
     src/fault/fault_injector.cpp
     src/storage/storage.cpp
@@ -111,6 +112,11 @@ if(STORQ_BUILD_EXAMPLES)
     add_executable(storq_crash_simulation examples/crash_simulation.cpp)
     target_link_libraries(storq_crash_simulation PRIVATE Storq::core)
     set_target_properties(storq_crash_simulation PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    add_executable(storq_recovery_verification examples/recovery_verification.cpp)
+    target_link_libraries(storq_recovery_verification PRIVATE Storq::core)
+    set_target_properties(storq_recovery_verification PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     )
 endif()
