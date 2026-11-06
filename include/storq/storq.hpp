@@ -20,3 +20,5 @@
 #include <storq/fault/fault_injector.hpp>
 #include <storq/storage/storage.hpp>
 #include <storq/wal/wal_analyzer.hpp>
+#include <storq/adapters/database_adapter.hpp>
+#include <storq/adapters/sqlite/sqlite_adapter.hpp>

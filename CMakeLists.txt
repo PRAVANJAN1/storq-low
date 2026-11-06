@@ -31,6 +31,8 @@ set(STORQ_CORE_SOURCES
     src/fault/fault_injector.cpp
     src/storage/storage.cpp
     src/wal/wal_analyzer.cpp
+    src/adapters/database_adapter.cpp
+    src/adapters/sqlite/sqlite_adapter.cpp
 )
 
 if(STORQ_BUILD_SHARED)
@@ -54,6 +56,12 @@ target_compile_definitions(storq_core
 )
 find_package(Threads REQUIRED)
 target_link_libraries(storq_core PUBLIC Threads::Threads)
+find_package(SQLite3 QUIET)
+if(SQLite3_FOUND)
+    target_link_libraries(storq_core PUBLIC SQLite3::SQLite3)
+else()
+    target_compile_definitions(storq_core PRIVATE STORQ_SQLITE3_AVAILABLE=0)
+endif()
 
 if(MSVC)
     target_compile_options(storq_core PRIVATE /W4 /permissive-)
