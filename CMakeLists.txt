@@ -33,12 +33,19 @@ set(STORQ_CORE_SOURCES
     src/recovery/recovery_engine.cpp
     src/forensics/forensics_engine.cpp
     src/format/format_inspector.cpp
+    src/format/storq_format.cpp
     src/fault/fault_injector.cpp
     src/storage/storage.cpp
     src/wal/wal_analyzer.cpp
     src/adapters/database_adapter.cpp
     src/adapters/sqlite/sqlite_adapter.cpp
     src/workload/workload_engine.cpp
+    src/page/data_page.cpp
+    src/records/record_id.cpp
+    src/records/record_manager.cpp
+    src/index/index_key.cpp
+    src/index/hash_index.cpp
+    src/wal/native_wal.cpp
 )
 
 if(STORQ_BUILD_SHARED)
@@ -64,7 +71,13 @@ find_package(Threads REQUIRED)
 target_link_libraries(storq_core PUBLIC Threads::Threads)
 find_package(SQLite3 QUIET)
 if(SQLite3_FOUND)
-    target_link_libraries(storq_core PUBLIC SQLite3::SQLite3)
+    if(TARGET SQLite3::SQLite3)
+        target_link_libraries(storq_core PUBLIC SQLite3::SQLite3)
+    elseif(TARGET SQLite::SQLite3)
+        target_link_libraries(storq_core PUBLIC SQLite::SQLite3)
+    else()
+        target_compile_definitions(storq_core PRIVATE STORQ_SQLITE3_AVAILABLE=0)
+    endif()
 else()
     target_compile_definitions(storq_core PRIVATE STORQ_SQLITE3_AVAILABLE=0)
 endif()

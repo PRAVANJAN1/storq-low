@@ -10,6 +10,7 @@
 #include <utility>
 
 #include <storq/core/runtime.hpp>
+#include <storq/format/storq_format.hpp>
 
 namespace storq {
 namespace {
@@ -71,6 +72,57 @@ FormatStatus classify(const FormatInspectionResult& result) {
 }
 
 } // namespace
+
+FormatDescriptor StorqNativeParser::descriptor() const {
+    return {
+        DatabaseFormat::Storq,
+        "storq",
+        "Storq",
+        "1.0",
+        "Read-only inspection of Storq native database headers and metadata.",
+        {"header-validation", "page-layout", "metadata-integrity", "crc32c"},
+        true,
+        true};
+}
+
+Result<bool> StorqNativeParser::matches(StorageFile& file) const {
+    if (!file.is_open()) return format_error(ErrorCode::InvalidState, "Cannot inspect a closed file.");
+    std::array<std::byte, 9> bytes{};
+    auto read = file.read_at(0, bytes);
+    if (!read) return read.error();
+    return read.value() >= 8 &&
+           bytes[0] == std::byte{'S'} && bytes[1] == std::byte{'T'} &&
+           bytes[2] == std::byte{'O'} && bytes[3] == std::byte{'R'} &&
+           bytes[4] == std::byte{'Q'} && bytes[5] == std::byte{'D'} &&
+           bytes[6] == std::byte{'B'} && bytes[7] == std::byte{0};
+}
+
+Result<FormatInspectionResult> StorqNativeParser::inspect(StorageFile& file) const {
+    FormatInspectionResult result;
+    result.format = DatabaseFormat::Storq;
+    result.descriptor = descriptor();
+    auto metadata_path = file.metadata();
+    if (!metadata_path || !metadata_path.value().path) {
+        result.status = FormatStatus::Corrupted;
+        result.warnings.push_back({ValidationSeverity::Critical, "storq.invalid", "Storq format has no inspectable path."});
+        return result;
+    }
+    auto metadata = StorqFormatOpener::open(metadata_path.value().path.value(), true);
+    if (!metadata) {
+        result.status = FormatStatus::Corrupted;
+        result.warnings.push_back({ValidationSeverity::Critical, "storq.invalid", metadata.error().message});
+        return result;
+    }
+    result.file_size = metadata.value().physical_file_size;
+    result.page_size = metadata.value().header.page_size;
+    result.page_count = metadata.value().header.page_count;
+    result.complete_pages = metadata.value().header.page_count;
+    result.header_valid = true;
+    result.structure_valid = true;
+    result.format_metadata = std::make_shared<StorqFormatMetadata>(metadata.value());
+    result.status = FormatStatus::Valid;
+    return result;
+}
 
 SQLiteJournalMode SQLiteHeader::journal_mode() const noexcept {
     if (write_version == 1 && read_version == 1) {
@@ -481,10 +533,19 @@ Result<void> FormatInspector::initialize() {
             initialized_.store(false);
             return registered.error();
         }
+        if (!registry_.find_parser(DatabaseFormat::Storq)) {
+            auto registered = registry_.register_parser(std::make_shared<StorqNativeParser>());
+            if (!registered) {
+                initialized_.store(false);
+                return registered.error();
+            }
+        }
     }
     static_cast<void>(runtime_.capabilities().register_capability("format_inspection"));
     static_cast<void>(
         runtime_.capabilities().register_capability("format_inspection.sqlite"));
+    static_cast<void>(
+        runtime_.capabilities().register_capability("format_inspection.storq"));
     return {};
 }
 

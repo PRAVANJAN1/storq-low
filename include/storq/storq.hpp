@@ -17,9 +17,17 @@
 #include <storq/recovery/recovery_engine.hpp>
 #include <storq/forensics/forensics_engine.hpp>
 #include <storq/format/format_inspector.hpp>
+#include <storq/format/storq_format.hpp>
 #include <storq/fault/fault_injector.hpp>
 #include <storq/storage/storage.hpp>
 #include <storq/wal/wal_analyzer.hpp>
 #include <storq/adapters/database_adapter.hpp>
 #include <storq/adapters/sqlite/sqlite_adapter.hpp>
 #include <storq/workload/workload_engine.hpp>
+#include <storq/records/record.hpp>
+#include <storq/records/record_id.hpp>
+#include <storq/records/record_manager.hpp>
+#include <storq/page/data_page.hpp>
+#include <storq/index/index_key.hpp>
+#include <storq/index/hash_index.hpp>
+#include <storq/wal/native_wal.hpp>

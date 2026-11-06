@@ -4,9 +4,25 @@ Storq is a modular C++20 database reliability engineering foundation. The core
 provides lifecycle management, configuration validation, structured logging,
 typed errors and results, module registration, capabilities, version
 information, common utilities, and a backend-neutral storage abstraction.
-The format inspection module currently validates SQLite database headers and
-page layout. Full database engines and the Storq physical format are not
-implemented.
+The format inspection module validates SQLite database headers and page layout,
+and supports creating and inspecting the native Storq version-1 format. Native
+Storq files provide format headers, metadata pages, CRC32C integrity checks,
+and page-size validation. Module 17 adds slotted data pages and native record
+storage.
+
+## Record and page management
+
+Module 17 stores records in checksummed Storq data pages after the format
+metadata page. Records use a versioned binary encoding with null, boolean,
+integer, floating-point, UTF-8 string, and binary values. Inserted records
+are addressed by generation-aware `page_id:slot_id:generation` identifiers;
+deleted and stale identifiers are rejected instead of resolving to another
+record. `RecordManager` supports deterministic insertion, reading, replacement,
+logical deletion, and existence checks.
+
+Page mutations use the module-2 storage abstraction and individual operations
+are synchronized explicitly. These APIs do not provide transaction rollback,
+WAL recovery, or hardware-level durability guarantees.
 
 ## Crash Simulation
 

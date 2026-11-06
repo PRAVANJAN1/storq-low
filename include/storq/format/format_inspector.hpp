@@ -120,7 +120,7 @@ struct SQLiteMetadata final : IFormatMetadata {
     std::uint64_t physically_available_complete_pages{0};
 };
 
-struct StorqFormatMetadata final : IFormatMetadata {
+struct StorqInspectionMetadata final : IFormatMetadata {
     std::string detected_version;
 };
 

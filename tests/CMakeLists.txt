@@ -5,6 +5,16 @@ set_target_properties(storq_core_tests PROPERTIES
 )
 add_test(NAME storq_core_tests COMMAND storq_core_tests)
 
+add_executable(storq_records_tests test_records.cpp)
+target_link_libraries(storq_records_tests PRIVATE Storq::core)
+set_target_properties(storq_records_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+add_test(NAME storq_records_tests COMMAND storq_records_tests)
+
+add_executable(storq_module18_tests test_module18.cpp)
+target_link_libraries(storq_module18_tests PRIVATE Storq::core)
+set_target_properties(storq_module18_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+add_test(NAME storq_module18_tests COMMAND storq_module18_tests)
+
 add_executable(storq_storage_tests test_storage.cpp)
 target_link_libraries(storq_storage_tests PRIVATE Storq::core)
 set_target_properties(storq_storage_tests PROPERTIES

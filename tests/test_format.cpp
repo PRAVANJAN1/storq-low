@@ -146,8 +146,8 @@ void test_inspection_and_unknown(const std::filesystem::path& directory) {
     require(inspector->is_initialized(), "Expected format inspector module initialization.");
     require(runtime.capabilities().contains("format_inspection.sqlite"),
             "Expected SQLite inspection capability registration.");
-    require(inspector->formats().size() == 1,
-            "Expected built-in SQLite parser registration.");
+    require(inspector->formats().size() == 2,
+            "Expected built-in SQLite and Storq parser registration.");
 
     auto inspected = inspector->inspect(valid_path);
     require(inspected.has_value(), "Expected valid fixture inspection.");
