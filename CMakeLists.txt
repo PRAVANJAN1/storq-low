@@ -14,6 +14,11 @@ else()
     set(STORQ_BUILD_TYPE_VALUE "Unknown")
 endif()
 
+option(STORQ_BUILD_PYTHON "Build the Storq Python native extension" OFF)
+if(STORQ_BUILD_PYTHON)
+    add_subdirectory(python)
+endif()
+
 set(STORQ_CORE_SOURCES
     src/common/utilities.cpp
     src/analysis/page_analyzer.cpp

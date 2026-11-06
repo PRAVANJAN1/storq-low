@@ -1,0 +1,15 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.10"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "storq"
+version = "0.1.0"
+description = "Python SDK for Storq database reliability tooling"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.scikit-build]
+cmake.source-dir = ".."
+cmake.args = ["-DSTORQ_BUILD_PYTHON=ON"]
+wheel.packages = ["storq"]
