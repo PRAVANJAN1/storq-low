@@ -13,6 +13,7 @@
 #include <storq/core/module_registry.hpp>
 #include <storq/core/runtime.hpp>
 #include <storq/core/version.hpp>
+#include <storq/crash/crash_simulator.hpp>
 #include <storq/format/format_inspector.hpp>
 #include <storq/fault/fault_injector.hpp>
 #include <storq/storage/storage.hpp>

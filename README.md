@@ -8,6 +8,14 @@ The format inspection module currently validates SQLite database headers and
 page layout. Full database engines and the Storq physical format are not
 implemented.
 
+## Crash Simulation
+
+Module 7 records storage operations, schedules deterministic crash scenarios,
+models backend persistence states, freezes simulated execution, and creates
+crash snapshots. Native filesystem persistence is modeled according to the
+backend synchronization contract and is not a claim about physical disk caches
+or hardware power-loss behavior. Destructive examples use disposable storage.
+
 ## Build
 
 Configure and build with CMake 3.20 or newer:

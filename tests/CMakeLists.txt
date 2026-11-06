@@ -64,3 +64,10 @@ set_target_properties(storq_fault_tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 add_test(NAME storq_fault_tests COMMAND storq_fault_tests)
+
+add_executable(storq_crash_tests test_crash.cpp)
+target_link_libraries(storq_crash_tests PRIVATE Storq::core)
+set_target_properties(storq_crash_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+add_test(NAME storq_crash_tests COMMAND storq_crash_tests)
